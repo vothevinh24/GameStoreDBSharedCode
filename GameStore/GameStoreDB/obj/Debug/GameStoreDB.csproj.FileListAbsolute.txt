@@ -1,0 +1,5 @@
+I:\GameStore\GameStoreDB\bin\Debug\GameStoreDB.dll
+I:\GameStore\GameStoreDB\bin\Debug\GameStoreDB.pdb
+I:\GameStore\GameStoreDB\obj\Debug\GameStoreDB.csproj.CoreCompileInputs.cache
+I:\GameStore\GameStoreDB\obj\Debug\GameStoreDB.dll
+I:\GameStore\GameStoreDB\obj\Debug\GameStoreDB.pdb

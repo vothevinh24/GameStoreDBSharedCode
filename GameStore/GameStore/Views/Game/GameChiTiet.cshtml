@@ -1,0 +1,303 @@
+﻿
+@{
+    ViewBag.Title = "GameChiTiet";
+    Layout = "~/Views/Shared/_GiaoDienChung.cshtml";
+}
+@{
+    int soGame = ViewBag.SoGame;
+    string tenDanhMucGame = ViewBag.TenDanhMucGame;
+    int tongSoGame = ViewBag.TongSoGame;
+    string ma = ViewBag.MaTuyChon;
+    GameStoreDB.Game_Info Game = ViewBag.ChiTietGame;
+    List<GameStoreDB.TinTuc_Info> DanhSachTinTuc = ViewBag.TinTucTheoGame;
+}
+<div class="site-content" role="main">
+    <section class="bg-image bg-dark py-5 py-lg-7 px-4 px-lg-0" ya-style="background-color: #343538">
+        <img class="background" src="~/Assets/img/anhdaidien/@Game.AnhDaiDien" alt="@Game.TenGame">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8 order-2 order-md-2 text-center text-md-left">
+                    <h1 class="display-5 font-weight-bold text-white">@Game.TenGame</h1>
+                    <p class="text-light pr-md-5 pr-lg-0">@Game.MoTa</p>
+                    <div class="d-flex d-sm-block flex-column mt-sm-4 pt-2"><a class="btn btn-primary btn-shadow btn-rounded btn-lg" href="@Game.Trailer" ya-lightbox role="button"><i class="ya ya-play d-none d-sm-inline mr-1"></i> Xem Trailer</a><a class="btn btn-outline-light btn-rounded btn-lg mt-2 mt-sm-0 ml-sm-2" href="shop-product.html" role="button">Purchase Now <i class="ya ya-shopping-cart"></i></a></div>
+                </div>
+                <div class="col-md-4 order-1 order-md-2 d-flex align-items-md-center justify-content-center justify-content-md-end text-center mb-4 mb-md-0">
+                    <div>
+                        <p class="font-weight-semibold text-white d-none d-md-inline-block">Điểm</p><a class="easypiechart" href="@Url.Action("GameChiTiet","Game",new { ma = Game.MaGame})" data-percent="89" data-scale-color="#e3e3e3" data-bar-color="#5eb404"><span class="easypiechart-text">@(Game.DanhGia * 10)</span></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="bg-white border-bottom py-0" ya-sticky>
+        <div class="container">
+            <div class="row">
+                <div class="col d-flex align-items-center">
+                    <div class="nav-scroll">
+                        <div class="nav nav-list"><a class="nav-item nav-link active" href="#">God of War</a><a class="nav-item nav-link" href="#">Reviews (14)</a><a class="nav-item nav-link" href="#">Images</a><a class="nav-item nav-link" href="#">Videos (8)</a><a class="nav-item nav-link" href="#">Streams</a><a class="nav-item nav-link" href="#">Forums</a><a class="nav-item nav-link" href="#">Shop</a></div>
+                    </div>
+                    <div class="btn-group d-none d-lg-inline-flex mr-2 ml-auto"><a class="btn btn-default btn-icon" href="#"><i class="ya ya-small-left"></i></a><a class="btn btn-default btn-icon" href="#"><i class="ya ya-small-right"></i></a></div><a class="btn btn-default btn-icon d-none d-lg-inline-block" href="#"><i class="ya ya-gear"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <form class="form-inline w-800 d-block d-sm-flex mb-2 mb-md-4" action="@Url.Action("XuLyGameChiTiet","TinTuc")" method="post">
+                        <input type="hidden" name="ma" value="@ma" />
+                        <input type="hidden" name="tendanhmucgame" value="@tenDanhMucGame" />
+                     
+                        <h5 class="h6 text-uppercase font-weight-bold mb-0 pl-1 d-block">Thanh tìm kiếm</h5>
+                        <div class="input-group mr-auto ml-md-4 mb-2 mb-md-0 mt-3 mt-md-0">
+
+                            <input type="text" class="form-control" name="tukhoa" placeholder="Tìm tin tức...">
+                            <div class="input-group-append"><button type="submit" class="btn btn-light border-left-0"><i class="ya ya-search m-0"></i></button></div>
+                        </div>
+                    </form>
+
+                    @{
+
+                        foreach (var item in DanhSachTinTuc)
+                        {
+                            <div class="post">
+                                <div class="post-thumbnail"><img class="post-img" src="~/Assets/img/@item.HinhAnhMinhHoa" alt="@item.TenTinTuc"></div>
+                                <div class="post-body">
+                                    <h2 class="post-title"><a href="@Url.Action("TinTucChiTiet","TinTuc", new { matintuc = item.MaTinTuc})">@item.TenTinTuc</a></h2>
+                                    <div class="post-meta">
+                                        <span class="post-meta-item"><i class="ya ya-calendar"></i> @item.NgayDang.ToString("MMM dd , yyyy")</span>
+
+                                    </div>
+                                    @{
+                                        string noiDung = System.Text.RegularExpressions.Regex.Replace(item.NoiDung, "<.*?>", String.Empty);
+                                    }
+                                    <p>@(noiDung.Length < 70 ? noiDung : noiDung.Substring(0, 70))...</p>
+                                </div><!-- end .post -->
+                            </div>
+                        }
+                    }
+
+
+                    @{
+
+                        int tranghientai = 1;
+                        // Giao tiep voi client
+                        if (Request.QueryString["trang"] != null)
+                        {
+                            tranghientai = int.Parse(Request.QueryString["trang"].ToString());
+                        }
+                        int trangtruoc = 1;
+                        if (tranghientai > 1)
+                        {
+                            trangtruoc = tranghientai - 1;
+                        }
+                    }
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            @{
+
+                                if (tranghientai > 1)
+                                {
+                                    <li class="page-item "><a class="page-link" href="@Url.Action("GameChiTiet", "Game", new { trang = trangtruoc, ma=Game.MaGame})">Trang trước</a></li>
+
+                                }
+
+
+                                int SoTrang = tongSoGame / soGame;
+                                if (tongSoGame % soGame != 0)
+                                {
+                                    SoTrang++;
+                                }
+                                int trangHienThi;
+                                if (tranghientai - 2 < 1)
+                                {
+                                    trangHienThi = 1;
+                                }
+                                else if (tranghientai + 2 > SoTrang)
+                                {
+                                    trangHienThi = SoTrang - 4;
+                                    if (trangHienThi < 1)
+                                    {
+                                        trangHienThi = 1;
+                                    }
+                                }
+                                else
+                                {
+                                    trangHienThi = tranghientai - 2;
+                                }
+                                if (trangHienThi >= 2)
+                                {
+
+                                    <li class="page-item ">
+                                        <a href="@Url.Action("GameChiTiet", "Game", new { trang = 1 , ma=Game.MaGame})" class="page-link">1</a>
+                                    </li>
+                                    if (trangHienThi != 2)
+                                    {
+                                        <li class="page-item gap"><span class="page-link">...</span></li>
+                                    }
+
+                                }
+                                if (SoTrang < trangHienThi + 4)
+                                {
+                                    for (int i = trangHienThi; i <= SoTrang; i++)
+                                    {
+                                        if (tranghientai == i)
+                                        {
+                                            <li class="page-item active">
+                                                <a href="@Url.Action("GameChiTiet", "Game", new { trang = i, ma=Game.MaGame })" class="page-link">@i</a>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="page-item ">
+                                                <a href="@Url.Action("GameChiTiet", "Game", new { trang = i , ma=Game.MaGame})" class="page-link">@i</a>
+                                            </li>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    for (int i = trangHienThi; i <= trangHienThi + 4; i++)
+                                    {
+                                        if (tranghientai == i)
+                                        {
+                                            <li class="page-item active">
+                                                <a href="@Url.Action("GameChiTiet", "Game", new { trang = i, ma=Game.MaGame })" class="page-link">@i</a>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="page-item ">
+                                                <a href="@Url.Action("GameChiTiet", "Game", new { trang = i , ma=Game.MaGame})" class="page-link">@i</a>
+                                            </li>
+                                        }
+                                    }
+
+                                }
+                                if (trangHienThi < SoTrang - 4)
+                                {
+                                    if (trangHienThi + 4 != SoTrang - 1)
+                                    {
+                                        <li class="page-item gap"><span class="page-link">...</span></li>
+                                    }
+
+                                    <li class="page-item ">
+                                        <a href="@Url.Action("GameChiTiet", "Game", new { trang = SoTrang, ma=Game.MaGame })" class="page-link">@SoTrang</a>
+                                    </li>
+                                }
+                                int trangsau = SoTrang;
+                                if (tranghientai < SoTrang)
+                                {
+                                    trangsau = tranghientai + 1;
+                                    <li class="page-item"><a class="page-link" href="@Url.Action("GameChiTiet","Game", new { trang= trangsau, ma=Game.MaGame})">Trang sau</a></li>
+                                }
+
+                            }
+                        </ul>
+                    </nav><!-- end pagination -->
+                </div>
+                <div class="col-lg-4">
+                    <div class="widget widget-game" ya-style="background-color: #343538">
+                        <img src="../../../img.youtube.com/vi/IZyJlfEVoQg/maxresdefault.jpg" alt="">
+                        <div class="widget-body">
+                            <h3 class="widget-title text-white">@Game.TenGame</h3>
+                            <p class="font-weight-light font-size-md">Phát hành @Game.NgayPhatHanh.ToString("MMM dd , yyyy")</p>
+                            @{
+                                List<string> ListDanhSachNenTang = GameStoreDB.PhanLoaiNenTang_Data.LayDanhSachNenTangTheoGame(Game.MaGame.ToString());
+                                <h6>Nền tảng</h6>
+                                for (int i = 0; i < ListDanhSachNenTang.Count; i++)
+                                {
+                                    <span class="badge badge-primary">@(GameStoreDB.NenTang_Data.LayTenNenTang(ListDanhSachNenTang[i]))</span>
+                                }
+                            }
+
+                            <h6 class="mt-4">Nhà sản xuất</h6><a class="font-weight-light font-size-md" href="#">@(GameStoreDB.NhaSanXuat_Data.LayNhaSanXuatTheoMaNhaSanXuat(Game.MaNhaSanXuat.ToString()).TenNhaSanXuat)</a>
+                            <h6 class="mt-4">Nhà phát hành</h6><a class="font-weight-light font-size-md" href="#">@(GameStoreDB.NhaPhatHanh_Data.LayNhaPhatHanhTheoMaNhaPhatHanh(Game.MaNhaPhatHanh.ToString()).TenNhaPhatHanh)</a>
+                            <h6 class="mt-4">Thể loại</h6>
+                            @{
+                                List<string> DanhSachMaTheLoai = GameStoreDB.PhanLoaiTheLoai_Data.LayDanhSachTheLoaiTheoMaGame(Game.MaGame.ToString());
+                                foreach (var value in DanhSachMaTheLoai)
+                                {
+                                    <span class="badge badge-primary">@GameStoreDB.TheLoai_Data.LayTheLoaiTheoMaTheLoai(value).TenTheLoai</span>
+                                }
+                            }
+                            <p class="font-weight-light font-size-md mt-4">@Game.MoTa</p>
+                        </div>
+                    </div><!-- end .widget -->
+                    <div class="widget">
+                        <div class="widget-header">Recommends</div><a class="img-cover img-md mb-3" href="blog-post.html"><img src="../../../i.ytimg.com/vi/eyEhO0P2_HU/maxresdefault.jpg" alt=""></a>
+                        <div class="widget-body">
+                            <h5 class="h6"><a href="blog-post.html">God of War Director Clarifies Comments on Future of Franchise</a></h5>
+                            <div class="font-size-md font-weight-semibold text-muted mb-2"><i class="ya ya-calendar mr-1"></i> November 28, 2018</div>
+                            <p>Timed voice share led his widen noisy young. On weddings believed laughing although material do exercis.</p>
+                        </div>
+                    </div><!-- end .widget -->
+                    <div class="widget widget-secondary">
+                        <div class="widget-header">Navigation</div>
+                        <div class="widget-body p-0">
+                            <div class="list-group list-group-flush"><a class="list-group-item list-group-item-action active" href="#"><i class="ya ya-content"></i> Articles</a><a class="list-group-item list-group-item-action" href="#"><i class="ya ya-star"></i> Reviews<span class="badge badge-secondary badge-pill">14</span> </a><a class="list-group-item list-group-item-action" href="#"><i class="ya ya-image"></i> Images<span class="badge badge-secondary badge-pill">42</span> </a><a class="list-group-item list-group-item-action" href="#"><i class="ya ya-player"></i> Videos</a><a class="list-group-item list-group-item-action" href="#"><i class="ya ya-camera"></i> Streams<span class="badge badge-secondary badge-pill">23</span> </a><a class="list-group-item list-group-item-action" href="#"><i class="ya ya-comment"></i> Forums</a><a class="list-group-item list-group-item-action" href="#"><i class="ya ya-shopping-cart"></i> Shop</a></div>
+                        </div>
+                    </div><!-- end .widget -->
+                    <div class="widget widget-gallery">
+                        <div class="widget-header">Images</div>
+                        <div class="row row-xs">
+                            <div class="col-6"><a class="widget-img" href="../../../static.giantbomb.com/uploads/original/0/329/3015852-god%2bof%2bwar_20180420174408.png" ya-lightbox rel="gallery"><img src="../../../static.giantbomb.com/uploads/square_medium/0/329/3015852-god%2bof%2bwar_20180420174408.jpg" alt=""></a></div>
+                            <div class="col-6"><a class="widget-img" href="../../../static.giantbomb.com/uploads/original/0/329/3015848-god%2bof%2bwar_20180420173459.png" ya-lightbox rel="gallery"><img src="../../../static.giantbomb.com/uploads/square_medium/0/329/3015848-god%2bof%2bwar_20180420173459.jpg" alt=""></a></div>
+                            <div class="col-6"><a class="widget-img" href="../../../static.giantbomb.com/uploads/original/0/329/3015846-god%2bof%2bwar_20180420171302.png" ya-lightbox rel="gallery"><img src="../../../static.giantbomb.com/uploads/square_medium/0/329/3015846-god%2bof%2bwar_20180420171302.jpg" alt=""></a></div>
+                            <div class="col-6"><a class="widget-img" href="../../../static.giantbomb.com/uploads/original/0/329/3015844-god%2bof%2bwar_20180420170849.png" ya-lightbox rel="gallery"><img src="../../../static.giantbomb.com/uploads/square_medium/0/329/3015844-god%2bof%2bwar_20180420170849.jpg" alt=""></a></div>
+                            <div class="col-6"><a class="widget-img" href="../../../static.giantbomb.com/uploads/original/0/329/3015849-god%2bof%2bwar_20180420173540.png" ya-lightbox rel="gallery"><img src="../../../static.giantbomb.com/uploads/square_medium/0/329/3015849-god%2bof%2bwar_20180420173540.jpg" alt=""></a></div>
+                            <div class="col-6"><a class="widget-img" href="../../../static.giantbomb.com/uploads/original/0/329/3015850-god%2bof%2bwar_20180420174106.png" ya-lightbox rel="gallery"><img src="../../../static.giantbomb.com/uploads/square_medium/0/329/3015850-god%2bof%2bwar_20180420174106.jpg" alt=""></a></div>
+                        </div><a class="btn btn-outline btn-block btn-sm mt-2" href="games.html" role="button">View Galleries</a>
+                    </div><!-- end .widget -->
+                    <div class="widget widget-video">
+                        <div class="widget-header">Recent Video</div>
+                        <div class="widget-img embed-player">
+                            <img src="../../../i.ytimg.com/vi/Yo1grWlmSAs/maxresdefault.jpg" alt="">
+                            <div class="widget-meta">15:05</div><a class="embed-icon" href="https://www.youtube.com/watch?v=gOE2BVRCUkM" ya-lightbox><i class="ya ya-play"></i></a>
+                        </div>
+                    </div><!-- end .widget -->
+                    <div class="widget widget-list">
+                        <div class="widget-header mb-1">Popular posts</div>
+                        <div class="media">
+                            <a class="img-cover img-md" href="#"><img src="../../../static.giantbomb.com/uploads/square_medium/0/329/3015841-god%2bof%2bwar_20180420165310.jpg" alt=""></a>
+                            <div class="media-body">
+                                <h6><a href="#">God of War All Boss Death Scenes Gods Kratos Brutal Kills</a></h6>
+                                <div class="font-size-sm font-weight-semibold text-muted">December 12, 2018</div>
+                            </div>
+                        </div>
+                        <div class="media">
+                            <a class="img-cover img-md" href="#"><img src="../../../static.giantbomb.com/uploads/square_medium/0/329/3015846-god%2bof%2bwar_20180420171302.jpg" alt=""></a>
+                            <div class="media-body">
+                                <h6><a href="#">God of War Atreus Gets Angry Awakens Spartan Rage</a></h6>
+                                <div class="font-size-sm font-weight-semibold text-muted">November 22, 2018</div>
+                            </div>
+                        </div>
+                        <div class="media">
+                            <a class="img-cover img-md" href="#"><img src="../../../i.ytimg.com/vi/tsSgKIQmEg0/mqdefault.jpg" alt=""></a>
+                            <div class="media-body">
+                                <h6><a href="#">The World Serpent Jormungandr Story All Cutscenes</a></h6>
+                                <div class="font-size-sm font-weight-semibold text-muted">November 21, 2018</div>
+                            </div>
+                        </div>
+                        <div class="media">
+                            <a class="img-cover img-md" href="#"><img src="../../../static.giantbomb.com/uploads/square_medium/0/329/3015848-god%2bof%2bwar_20180420173459.jpg" alt=""></a>
+                            <div class="media-body">
+                                <h6><a href="#">God of War All Bosses, Boss Fights Gods, Dragons and Ending</a></h6>
+                                <div class="font-size-sm font-weight-semibold text-muted">November 15, 2018</div>
+                            </div>
+                        </div>
+                        <div class="media">
+                            <a class="img-cover img-md" href="#"><img src="../../../static.giantbomb.com/uploads/square_medium/0/329/3015844-god%2bof%2bwar_20180420170849.jpg" alt=""></a>
+                            <div class="media-body">
+                                <h6><a href="#">God of War 15 Minutes of Gameplay Demo PS4</a></h6>
+                                <div class="font-size-sm font-weight-semibold text-muted">November 12, 2018</div>
+                            </div>
+                        </div><a class="btn btn-outline btn-block btn-sm mt-2" href="#" role="button">More Videos</a>
+                    </div><!-- end .widget -->
+                </div>
+            </div>
+        </div>
+    </section>
+</div><!-- end .site-content -->

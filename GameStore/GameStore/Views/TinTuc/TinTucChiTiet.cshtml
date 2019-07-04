@@ -1,0 +1,113 @@
+﻿@model GameStoreDB.TinTuc_Info
+@{
+    ViewBag.Title = "TinTucChiTiet";
+    Layout = "~/Views/Shared/_GiaoDienChung.cshtml";
+}
+@{
+
+}
+<div class="site-content" role="main">
+    <nav class="bg-white border-bottom" aria-label="breadcrumb">
+        <div class="container d-flex align-items-center">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "TinTuc")">Tin Tức</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.TenTinTuc</li>
+            </ol>
+
+        </div>
+    </nav>
+    <section class="py-lg-5 border-bottom-dashed">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="post post-single">
+                        <div class="post-header">
+                            <h1 class="post-title">@Model.TenTinTuc</h1>
+                            <div class="post-meta">
+                                <span class="post-meta-item"><i class="ya ya-calendar"></i> @Model.NgayDang.ToString("MMM dd , yyyy")</span>
+                                <a class="post-meta-item" href="@Url.Action("Index", "TinTuc", new { ma = Model.MaGame})"><i class="ya ya-star-o"></i> @GameStoreDB.Game_Data.LayTenGameTheoMaGame(Model.MaGame.ToString())</a>
+
+                            </div>
+                        </div>
+                        <div class="post-thumbnail">
+                            <img class="post-img" src="~/Assets/img/@Model.HinhAnhMinhHoa" alt="@Model.TenTinTuc">
+                        </div>
+                    </div>
+                    <div class="post-body">
+                        <p>@Model.TenTinTuc</p>
+                        <p>@Model.NoiDung</p>
+                        <blockquote class="blockquote">
+                            <p>“@Model.TenTinTuc.”</p>
+                        </blockquote>
+                        <p>@Model.NoiDung</p>
+                        <div class="d-flex align-items-center mt-4 pt-1">
+                            <div class="tags">
+                                @{
+                                    string tenGame = GameStoreDB.Game_Data.LayTenGameTheoMaGame(Model.MaGame.ToString());
+                                    <a href="@Url.Action("Index","TinTuc",new { ma = Model.MaGame})">#@tenGame</a>
+                                    List<string> danhSachTenTheLoai = GameStoreDB.PhanLoaiTheLoai_Data.LayDanhSachTheLoaiTheoMaGame(Model.MaGame.ToString());
+                                    foreach (var item in danhSachTenTheLoai)
+                                    {
+                                        <a href="@Url.Action("Index","TinTuc",new { ma = item })">#@GameStoreDB.TheLoai_Data.LayTheLoaiTheoMaTheLoai(item).TenTheLoai</a>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- end .post-single -->
+
+            </div>
+        </div>
+</div>
+    </section>
+<section class="py-lg-5 px-1 px-md-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="fb-comments" data-href="https://@Request.Url.Host:@Request.Url.Port/TinTuc/TinTucChiTiet?maTinTuc=@Model.MaTinTuc" data-width="900" data-numposts="7"></div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="py-lg-5 border-top-dashed">
+    <div class="container">
+        <div class="row">
+            <div class="col-11 col-md-8 text-center mx-auto mb-4">
+                <i class="ya ya-time-alarm icon"></i>
+                <h2 class="font-weight-bold">Có lẽ bạn sẽ thích nó</h2>
+                <p class="lead">Website cung cấp những tin tức hay về game</p>
+            </div>
+        </div>
+        <div class="row">
+            @{
+                List<GameStoreDB.TinTuc_Info> DanhSachTop3TinTucNgauNhien = GameStoreDB.TinTuc_Data.LayTop3TinTucNgauNhien();
+                foreach (var item in DanhSachTop3TinTucNgauNhien)
+                {
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+
+                            <a class="card-img" href="@Url.Action("TinTucChiTiet","TinTuc",new { ma=item.MaTinTuc})"><img src="~/Assets/img/@item.HinhAnhMinhHoa" alt="@item.TenTinTuc"></a>
+                            <div class="card-body">
+                                @{
+                                    string tenTinTuc = System.Text.RegularExpressions.Regex.Replace(item.TenTinTuc, "<.*?>", String.Empty);
+                                }
+                                <h6 class="card-title"><a href="@Url.Action("TinTucChiTiet","TinTuc",new { ma=item.MaTinTuc})">@(tenTinTuc.Length < 50 ? tenTinTuc : tenTinTuc.Substring(0,50))</a></h6>
+                                <div class="card-meta">
+                                    <span class="card-meta-item"><i class="ya ya-calendar"></i> @item.NgayDang.ToString("MMM dd , yyyy")</span>
+                                    <a class="card-meta-item" href="@Url.Action("Index","TinTuc",new { ma=item.MaGame , ten= GameStoreDB.Game_Data.LayTenGameTheoMaGame(item.MaGame.ToString())})"><i class="ya ya-star-o"></i>@GameStoreDB.Game_Data.LayTenGameTheoMaGame(item.MaGame.ToString())</a>
+                                </div>
+                                @{
+                                    string noiDung = System.Text.RegularExpressions.Regex.Replace(item.NoiDung, "<.*?>", String.Empty);
+                                }
+                                <p class="card-text">@(noiDung.Length < 70 ? noiDung : noiDung.Substring(0, 70))...</p>
+                            </div>
+                        </div><!-- end .card-post -->
+
+                    </div>
+                }
+            }
+        </div>
+            </div>
+        </section>
+        </div><!-- end .site-content -->

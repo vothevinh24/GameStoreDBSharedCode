@@ -1,0 +1,218 @@
+﻿@model  List<GameStoreDB.Game_Info>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_GiaoDienChung.cshtml";
+}
+@{
+    int soGameTrenTrang = ViewBag.SoGame;
+    string tenDanhMucTheLoai = ViewBag.TenDanhMucTheLoai;
+    int tongSoGame = ViewBag.TongSoGame;
+    string maTheLoai = ViewBag.MaTuyChon;
+}
+<div class="site-content" role="main">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Trang chủ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Danh sách game</li>
+        </ol>
+    </div>
+    <section class="border-bottom-dashed">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <form class="form-inline w-100" action="@Url.Action("XuLyGame","Game")" method="post">
+                    <input type="hidden" name="ma" value="@maTheLoai" />
+                    <input type="hidden" name="ten" value="@tenDanhMucTheLoai" />
+                    <h5 class="h6 text-uppercase font-weight-bold mb-0 pl-1 d-block"><i class="ya ya-blocks mr-2"></i> Tổng số game <span class="font-weight-normal">(@GameStoreDB.Game_Data.TongSoGame())</span></h5>
+                    <div class="input-group mr-auto ml-md-4 mb-2 mb-md-0 mt-3 mt-md-0">
+                        <input type="text" class="form-control form-control-inline" name="tukhoa" placeholder="Tìm game...">
+                        <div class="input-group-append"><button type="submit" class="btn btn-light border-left-0"><i class="ya ya-search m-0"></i></button></div>
+                    </div>
+                    @{
+                        if (tenDanhMucTheLoai == "")
+                        {
+                            tenDanhMucTheLoai = "Tất cả danh mục";
+                        }
+                    }
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-icon-left dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@tenDanhMucTheLoai</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item active" href="@Url.Action("Index","Game", new { ten="Tất cả danh mục"})">Tất cả danh mục</a>
+                            @{
+
+                                List<GameStoreDB.TheLoai_Info> DanhSachTheLoai = GameStoreDB.TheLoai_Data.LayDanhSachTheLoai();
+                                foreach (var item in DanhSachTheLoai)
+                                {
+                                    <a class="dropdown-item" href="@Url.Action("Index","Game", new { ma = item.MaTheLoai.ToString(), ten=item.TenTheLoai})">@item.TenTheLoai</a>
+                                }
+
+                            }
+                        </div>
+                    </div>
+
+                </form><!-- end form -->
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row row-md">
+                @{
+                    foreach (var item in Model)
+                    {
+                        <div class="col-sm-6 col-md-4">
+                            <div class="card card-sm mb-4">
+
+                                <a class="card-img card-img-lg" href="@Url.Action("GameChiTiet","Game", new { magame = item.MaGame})">
+                                    <span class="badge badge-danger">@(item.SoLuongTon < 5 ? "Sắp cháy hàng" : "")</span>
+                                    <img class="card-img-top" src="~/Assets/img/anhdaidien/@item.AnhDaiDien" alt="@item.TenGame">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="ya ya-check-circle text-success" data-toggle="tooltip" data-placement="bottom" data-title="Available"></i><a href="@Url.Action("GameChiTiet","Game", new { magame = item.MaGame})">@item.TenGame</a></h5>
+                                    @{
+                                        string moTa = System.Text.RegularExpressions.Regex.Replace(item.MoTa, "<.*?>", String.Empty);
+                                    }
+                                    <p class="card-text font-size-md">@(moTa.Length < 70 ? moTa : moTa.Substring(0, 70))...</p>
+
+                                    <div class="btn-group">
+                                        @{
+                                            List<string> ListDanhSachNenTang = GameStoreDB.PhanLoaiNenTang_Data.LayDanhSachNenTangTheoGame(item.MaGame.ToString());
+                                            for (int i = 0; i < ListDanhSachNenTang.Count; i++)
+                                            {
+                                                <span class="btn btn-default btn-xs">@(GameStoreDB.NenTang_Data.LayTenNenTang(ListDanhSachNenTang[i]))</span>
+                                            }
+                                        }
+
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <span><i class="ya ya-calendar"></i> @item.NgayPhatHanh.ToString("MMM dd , yyyy")</span>
+                                    <div class="ml-auto"><span ><i class="ya ya-shopping-cart"></i>@item.DonGia.ToString("#,### VNĐ")</span></div>
+
+                                </div>
+                            </div><!-- end .card -->
+                        </div>
+                    }
+
+                }
+                @{
+
+                    int tranghientai = 1;
+                    // Giao tiep voi client
+                    if (Request.QueryString["trang"] != null)
+                    {
+                        tranghientai = int.Parse(Request.QueryString["trang"].ToString());
+                    }
+                    int trangtruoc = 1;
+                    if (tranghientai > 1)
+                    {
+                        trangtruoc = tranghientai - 1;
+                    }
+                }
+
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-md-end mt-2">
+                    @{
+
+                        if (tranghientai > 1)
+                        {
+                            <li class="page-item "><a class="page-link" href="@Url.Action("Index", "Game", new { trang = trangtruoc, ma= maTheLoai})">Trang trước</a></li>
+
+                        }
+
+
+                        int SoTrang = tongSoGame / soGameTrenTrang;
+                        if (tongSoGame % soGameTrenTrang != 0)
+                        {
+                            SoTrang++;
+                        }
+                        int trangHienThi;
+                        if (tranghientai - 2 < 1)
+                        {
+                            trangHienThi = 1;
+                        }
+                        else if (tranghientai + 2 > SoTrang)
+                        {
+                            trangHienThi = SoTrang - 4;
+                            if (trangHienThi < 1)
+                            {
+                                trangHienThi = 1;
+                            }
+                        }
+                        else
+                        {
+                            trangHienThi = tranghientai - 2;
+                        }
+                        if (trangHienThi >= 2)
+                        {
+
+                            <li class="page-item ">
+                                <a href="@Url.Action("Index", "Game", new { trang = 1 , ma=maTheLoai})" class="page-link">1</a>
+                            </li>
+                            if (trangHienThi != 2)
+                            {
+                                <li class="page-item gap"><span class="page-link">...</span></li>
+                            }
+
+                        }
+                        if (SoTrang < trangHienThi + 4)
+                        {
+                            for (int i = trangHienThi; i <= SoTrang; i++)
+                            {
+                                if (tranghientai == i)
+                                {
+                                    <li class="page-item active">
+                                        <a href="@Url.Action("Index", "Game", new { trang = i, ma=maTheLoai })" class="page-link">@i</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="page-item ">
+                                        <a href="@Url.Action("Index", "Game", new { trang = i , ma=maTheLoai})" class="page-link">@i</a>
+                                    </li>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for (int i = trangHienThi; i <= trangHienThi + 4; i++)
+                            {
+                                if (tranghientai == i)
+                                {
+                                    <li class="page-item active">
+                                        <a href="@Url.Action("Index", "Game", new { trang = i, ma=maTheLoai })" class="page-link">@i</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="page-item ">
+                                        <a href="@Url.Action("Index", "Game", new { trang = i , ma=maTheLoai})" class="page-link">@i</a>
+                                    </li>
+                                }
+                            }
+
+                        }
+                        if (trangHienThi < SoTrang - 4)
+                        {
+                            if (trangHienThi + 4 != SoTrang - 1)
+                            {
+                                <li class="page-item gap"><span class="page-link">...</span></li>
+                            }
+
+                            <li class="page-item ">
+                                <a href="@Url.Action("Index", "Game", new { trang = SoTrang, ma=maTheLoai })" class="page-link">@SoTrang</a>
+                            </li>
+                        }
+                        int trangsau = SoTrang;
+                        if (tranghientai < SoTrang)
+                        {
+                            trangsau = tranghientai + 1;
+                            <li class="page-item"><a class="page-link" href="@Url.Action("Index","Game", new { trang= trangsau, ma=maTheLoai})">Trang sau</a></li>
+                        }
+
+                    }
+                </ul>
+            </nav><!-- end pagination -->
+        </div>
+    </section>
+</div><!-- end .site-content -->

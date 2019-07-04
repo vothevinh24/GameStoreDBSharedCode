@@ -1,0 +1,170 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_GiaoDienChung.cshtml";
+}
+
+<div class="site-content" role="main">
+    <section class="p-0 overflow-hidden">
+        <div class="owl-carousel" ya-carousel="autoplay: true;height: true">
+            @{
+                List<GameStoreDB.Game_Info> DanhSachNgauNhien = GameStoreDB.Game_Data.LayTop3DanhSachNgauNhien();
+                foreach (var item in DanhSachNgauNhien)
+                {
+                    <div class="owl-carousel-item">
+                        <img src="~/Assets/img/anhdaidien/@item.AnhDaiDien" ya-style="opacity: .28" alt="">
+                        <div class="owl-caption">
+                            <div class="owl-caption-container">
+                                <h1 class="owl-title">@item.TenGame</h1>
+                                @{
+                                    string moTa = System.Text.RegularExpressions.Regex.Replace(item.MoTa, "<.*?>", String.Empty);
+                                }
+                                <p class="owl-text">@(moTa.Length < 200 ? moTa : moTa.Substring(0, 200))...</p>
+                                <a class="btn btn-primary btn-lg btn-rounded" href="@Url.Action("GameChiTiet","Game", new { ma =item.MaGame})" role="button">Xem</a>
+                                <a class="btn btn-outline-light btn-lg btn-rounded ml-2" href="@item.Trailer" ya-lightbox role="button">Xem Trailer</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+
+        </div><!-- end .owl-carousel -->
+    </section>
+    <section class="py-5 py-md-6">
+        <div class="container">
+            <div class="row">
+                <div class="col-11 col-md-8 text-center mx-auto mb-4">
+                    <i class="ya ya-ranking icon"></i>
+                    <h2 class="font-weight-bold font-size-lg">Game mới cập nhật</h2>
+                  
+                </div>
+            </div>
+            <div class="row">
+                @{
+                    List<GameStoreDB.Game_Info> DanhSachPhatHanh = GameStoreDB.Game_Data.LayTop3DanhSachNgayPhatHanh();
+                    foreach (var item in DanhSachPhatHanh)
+                    {
+                        <div class="col-md-4">
+                            <div class="card card-sm">
+                                <a class="card-img card-img-lg" href="@Url.Action("GameChiTiet","Game", new { ma = item.MaGame})">
+                                    <span class="badge badge-danger">@(item.SoLuongTon < 5 ? "Sắp cháy hàng" : "")</span>
+                                    <img class="card-img-top" src="~/Assets/img/anhdaidien/@item.AnhDaiDien" alt="@item.TenGame">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="ya ya-check-circle text-success" data-toggle="tooltip" data-placement="bottom" data-title="Available"></i><a href="@Url.Action("GameChiTiet","Game", new { ma = item.MaGame})">@item.TenGame</a></h5>
+                                    @{
+                                        string moTa = System.Text.RegularExpressions.Regex.Replace(item.MoTa, "<.*?>", String.Empty);
+                                    }
+                                    <p class="card-tex font-size-md">@(moTa.Length < 150 ? moTa : moTa.Substring(0, 150))...</p>
+
+                                    <div class="btn-group">
+                                        @{
+                                            List<string> ListDanhSachNenTang = GameStoreDB.PhanLoaiNenTang_Data.LayDanhSachNenTangTheoGame(item.MaGame.ToString());
+                                            for (int i = 0; i < ListDanhSachNenTang.Count; i++)
+                                            {
+                                                <span class="btn btn-default btn-xs" >@(GameStoreDB.NenTang_Data.LayTenNenTang(ListDanhSachNenTang[i]))</span>
+                                            }
+                                        }
+
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <span><i class="ya ya-calendar"></i>@item.NgayPhatHanh.ToString("MMMM dd, yyyy")</span>
+                                    <div class="ml-auto"><span ><i class="ya ya-shopping-cart"></i>@item.DonGia.ToString("#,### VNĐ")</span></div>
+                                </div>
+                            </div><!-- end .card -->
+                        </div>
+                    }
+                }
+
+
+            </div>
+            <div class="text-center"><a class="btn btn-secondary btn-lg mt-3" href="@Url.Action("Index", "Game")" role="button">Xem thêm</a></div>
+        </div>
+    </section>
+    <section>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-10 px-0 mx-auto">
+                    @{
+                        GameStoreDB.Game_Info GameNgauNhien = GameStoreDB.Game_Data.LayGameNgauNhien();
+                    }
+                    <div class="d-flex align-items-center position-relative overflow-hidden py-5 py-md-7 px-3 px-xl-0" data-parallax="scroll" data-image-src="Assets/img/anhdaidien/@GameNgauNhien.AnhDaiDien" style="min-height: 500px">
+                        <div class="overlay" ya-style="background-color: #292b2f"></div>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-8 order-2 order-md-1 text-center text-sm-left">
+                                    <h2 class="display-5 font-weight-bold text-white">Tin tức @GameNgauNhien.TenGame</h2>
+                                    @{
+                                        string MoTa = System.Text.RegularExpressions.Regex.Replace(GameNgauNhien.MoTa, "<.*?>", String.Empty);
+                                    }
+                                    <p class="text-light">@(MoTa.Length < 250 ? MoTa : MoTa.Substring(0, 250))...</p>
+                                    <div class="d-flex d-sm-block flex-column mt-3 pt-3"><a class="btn btn-primary btn-shadow btn-rounded btn-lg mb-2 mb-sm-0" href="@Url.Action("GameChiTiet","Game", new { ma = GameNgauNhien.MaGame})" role="button">Xem ngay</a></div>
+                                </div>
+                                <div class="col-md-4 order-1 order-md-2 d-flex align-items-md-center justify-content-center  text-center mb-4 mb-md-0">
+                                    <div>
+                                        <p class="font-weight-semibold text-white d-none d-md-inline-block">Điểm</p><a class="easypiechart" href="@Url.Action("GameChiTiet","Game", new { ma = GameNgauNhien.MaGame})" data-percent="@(GameNgauNhien.DanhGia*10)" data-scale-color="#e3e3e3" data-bar-color="#5eb404"><span class="easypiechart-text">@(GameNgauNhien.DanhGia * 10)</span></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="py-md-6">
+        <div class="container">
+            <div class="row">
+                <div class="col-11 col-md-8 text-center mx-auto mb-4">
+                    <i class="ya ya-time-alarm icon"></i>
+                    <h2 class="font-weight-bold font-size-lg">Tin mới cập nhật</h2>
+                   
+                </div>
+            </div>
+            <div class="row">
+                @{
+                    List<GameStoreDB.TinTuc_Info> DanhSachTinTucTheoNgayDang = GameStoreDB.TinTuc_Data.LayTop3TinTucTheoNgayDang();
+                    foreach (var item in DanhSachTinTucTheoNgayDang)
+                    {
+                        <div class="col-md-4">
+                            <div class="card card-sm">
+                                <a class="card-img" href="blog-post.html"><img src="~/Assets/img/@item.HinhAnhMinhHoa" alt=""></a>
+                                <div class="card-body">
+                                    <h6 class="card-title"><a href="@Url.Action("TinTucChiTiet", "TinTuc", new { maTinTuc = item.MaTinTuc})">@item.TenTinTuc</a></h6>
+                                    <div class="card-meta"><span class="card-meta-item"><i class="ya ya-calendar"></i> @item.NgayDang.ToString("MMMM dd, yyyy")</span></div>
+                                    @{
+                                        string NoiDung = System.Text.RegularExpressions.Regex.Replace(item.NoiDung, "<.*?>", String.Empty);
+                                    }
+                                    <p class="card-text">@(NoiDung.Length < 50 ? NoiDung : NoiDung.Substring(0, 50))...</p>
+                                </div>
+                            </div><!-- end .card-post -->
+                        </div>
+                    }
+                }
+
+
+            </div>
+            <div class="text-center mt-2 mb-3"><a class="btn btn-secondary btn-lg" href="@Url.Action("Index","TinTuc")" role="button">Đọc thêm</a></div>
+        </div>
+    </section>
+    <section class="bg-image py-0 py-lg-3 py-xl-6" ya-style="background-color: rgb (22, 36, 59)">
+        @{
+            GameStoreDB.Game_Info GameNgauNhien2 = GameStoreDB.Game_Data.LayGameNgauNhien();
+         
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-8 mx-auto">
+                        <a class="btn btn-outline-light btn-lg btn-rounded ml-2" href="@GameNgauNhien2.Trailer" ya-lightbox role="button" ya-title="@GameNgauNhien2.TenGame">
+                        <img src="~/Assets/img/anhdaidien/@GameNgauNhien2.AnhDaiDien" alt="@GameNgauNhien2.TenGame">
+                        </a>
+                      
+                    </div>
+                </div>
+            </div>
+        }
+
+    </section>
+   
+</div><!-- end .site-content -->
